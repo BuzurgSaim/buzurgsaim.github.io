@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Buzurg Saim — Portfolio</title>
+  <meta name="description" content="Buzurg Saim — System Developer for ServiceNow. Projects, certifications, and contact." />
+
+  <!-- Social preview (edit these) -->
+  <meta property="og:title" content="Buzurg Saim — Portfolio" />
+  <meta property="og:description" content="System Developer for ServiceNow — projects, certifications, and contact." />
+  <meta property="og:type" content="website" />
+
+  <style>
+    :root {
+      /* Light beige / white theme */
+      --bg: #f6f3ee;            /* page background */
+      --panel: #ffffff;         /* cards */
+      --text: #1f2937;          /* main text */
+      --muted: #6b7280;         /* secondary text */
+      --border: #e5e1d8;        /* soft border */
+      --accent: #8b5e34;        /* warm brown */
+      --accent2: #c9a36a;       /* soft gold */
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --max: 1100px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(900px 450px at 15% 10%, rgba(201,163,106,0.25), transparent 55%),
+        radial-gradient(800px 420px at 85% 15%, rgba(139,94,52,0.18), transparent 55%),
+        var(--bg);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 22px 18px 72px; }
+
+    /* Top nav */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+      background: rgba(246,243,238,0.85);
+      border-bottom: 1px solid var(--border);
+    }
+    .navinner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand { display: flex; gap: 10px; align-items: center; }
+    .dot {
+      width: 12px; height: 12px; border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 6px rgba(139,94,52,0.14);
+    }
+    .brand strong { letter-spacing: 0.2px; }
+    .links { display: flex; gap: 14px; flex-wrap: wrap; }
+    .links a {
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--muted);
+    }
+    .links a:hover {
+      text-decoration: none;
+      border-color: var(--border);
+      background: #faf8f4;
+      color: var(--text);
+    }
+
+    /* Hero */
+    .hero { padding: 52px 0 26px; }
+    .heroGrid {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .heroPhotoWrap { padding: 22px; display:flex; flex-direction: column; align-items:center; justify-content:center; gap: 10px; }
+    .heroPhoto {
+      display: block;
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      object-position: 50% 22%;
+      border-radius: 26px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 22px 55px rgba(0,0,0,0.14);
+      background: #ffffff;
+    }
+
+    .aboutRow { display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; }
+    .aboutPhoto {
+      width: 96px;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 22px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+      background: #ffffff;
+      flex: 0 0 auto;
+    }
+    .aboutText { min-width: 240px; flex: 1; }
+    @media (max-width: 900px) {
+      .heroGrid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .heroGrid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .heroCard { padding: 26px; }
+    h1 {
+      font-size: clamp(34px, 4.2vw, 54px);
+      line-height: 1.05;
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+    }
+    .subtitle { color: var(--muted); margin: 0 0 18px; font-size: 17px; }
+    .pillRow { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 20px; }
+    .pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #faf8f4;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .ctaRow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .btn {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .btn:hover { text-decoration: none; background: #faf8f4; }
+    .btn.primary {
+      border-color: rgba(139,94,52,0.45);
+      background: linear-gradient(135deg, rgba(201,163,106,0.35), rgba(139,94,52,0.15));
+    }
+
+    /* Profile */
+    .profileCard { padding: 22px; display: grid; gap: 12px; }
+    .profilePhoto {
+      width: 96px;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.20);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .kv { display: grid; gap: 6px; color: var(--muted); font-size: 14px; }
+    .kv b { color: var(--text); font-weight: 600; }
+
+    /* Section */
+    section { padding: 22px 0; }
+    .sectionTitle { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+    h2 { margin: 0; font-size: 18px; letter-spacing: 0.2px; }
+    .hint { color: var(--muted); font-size: 14px; }
+
+    /* Projects grid */
+    .grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .project {
+      grid-column: span 6;
+      padding: 18px;
+      display: grid;
+      gap: 10px;
+      position: relative;
+    }
+    .project:hover { transform: translateY(-1px); transition: transform 120ms ease; }
+    @media (max-width: 900px) { .project { grid-column: span 12; } }
+
+    .tagRow { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag {
+      font-size: 12px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #faf8f4;
+      color: var(--muted);
+    }
+
+    .project h3 { margin: 0; font-size: 16px; }
+    .project p { margin: 0; color: var(--muted); }
+
+    .project a.more {
+      margin-top: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Certifications */
+    .certGrid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .certCard {
+      grid-column: span 4;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+    @media (max-width: 900px) { .certCard { grid-column: span 12; } }
+
+    .certThumb {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: #faf8f4;
+    }
+    .certTitle { margin: 0; font-size: 15px; font-weight: 700; }
+    .certMeta { margin: 0; color: var(--muted); font-size: 13px; }
+    .certLinks { display:flex; gap:10px; flex-wrap:wrap; }
+    .certLinks a { color: var(--text); font-weight: 600; }
+
+    /* Footer */
+    footer { padding-top: 26px; color: var(--muted); font-size: 14px; }
+
+    /* Small accessibility helpers */
+    :focus-visible { outline: 2px solid rgba(124,92,255,0.8); outline-offset: 3px; border-radius: 10px; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+
+    /* Smooth scroll */
+    html { scroll-behavior: smooth; }
+</style>
+</head>
+
+<body>
+  <header class="nav" aria-label="Primary">
+    <div class="navinner">
+      <a class="brand" href="#top">
+        <span class="dot" aria-hidden="true"></span>
+        <strong>Buzurg Saim</strong>
+      </a>
+      <nav class="links" aria-label="Sections">
+        <a href="#projects">Projects</a>
+        <a href="#certifications">Certifications</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <a href="#resume">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="wrap">
+    <section class="hero">
+      <div class="heroGrid">
+        <!-- Photo area -->
+        <div class="card heroPhotoWrap">
+          <img id="heroImg" src="profile_headshot.jpg" alt="Buzurg Saim profile image" class="heroPhoto" />
+          <div id="imgStatus" style="display:none; margin-top:12px; padding:10px 12px; border-radius:14px; border:1px solid var(--border); background:#faf8f4; color:var(--muted); font-size:13px; max-width:320px;">
+            Image not loading. See the quick fix tips below.
+          </div>
+        </div>
+
+        <!-- Text area -->
+        <div class="card heroCard">
+          <h1>
+            Hi, I’m <span style="background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent;">Buzurg Saim</span>.<br />Becoming a System Developer through ServiceNow.
+          </h1>
+          <p class="subtitle">
+            Actively learning ServiceNow with a focus on system development, workflow automation, and core platform fundamentals.
+          </p>
+
+          <div class="pillRow" aria-label="Highlights">
+            <span class="pill">ServiceNow CSA — Completed</span>
+            <span class="pill">ServiceNow CAD — In Progress</span>
+            <span class="pill">Workflow Automation</span>
+          </div>
+
+          <div class="ctaRow">
+            <a class="btn primary" href="#projects">View learning</a>
+            <a class="btn" href="#contact">Email me</a>
+            <a class="btn" href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="btn" href="https://www.linkedin.com/in/buzurg-saim-75777b19b/" target="_self" rel="noopener noreferrer">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="sectionTitle">
+        <h2>ServiceNow Practice & Learning</h2>
+        
+      </div>
+
+      <div class="grid">
+        <article class="card project">
+          <div class="tagRow">
+            <span class="tag">Personal Dev Instance</span>
+            <span class="tag">Configuration</span>
+            <span class="tag">ITSM</span>
+          </div>
+          <h3>ServiceNow Personal Development Instance</h3>
+          <p>
+            Regular hands-on practice in a personal instance: forms, lists, roles, users/groups, and core ITSM configuration.
+            Building confidence with platform navigation, data model basics, and admin best practices.
+          </p>
+          <a class="more" href="#certifications">Certifications <span aria-hidden="true">→</span></a>
+        </article>
+
+        <article class="card project">
+          <div class="tagRow">
+            <span class="tag">Workflows</span>
+            <span class="tag">Flow Designer</span>
+            <span class="tag">Approvals</span>
+          </div>
+          <h3>Workflow Automation Practice</h3>
+          <p>
+            Practicing end-to-end workflow patterns (approvals, notifications, task routing) using Flow Designer and platform configuration.
+            Focus on clean, maintainable logic and real-world ticket lifecycle behavior.
+          </p>
+          <a class="more" href="#about">What I’m learning <span aria-hidden="true">→</span></a>
+        </article>
+
+        <article class="card project">
+          <div class="tagRow">
+            <span class="tag">Scripting</span>
+            <span class="tag">Business Rules</span>
+            <span class="tag">UI Policies</span>
+          </div>
+          <h3>Client & Server-Side Scripting (Practice)</h3>
+          <p>
+            Hands-on practice with common scripting tools: Business Rules, Client Scripts, Script Includes, and UI Policies.
+            Emphasis on validation, user experience, and performance-aware patterns.
+          </p>
+          <a class="more" href="#contact">Ask for examples <span aria-hidden="true">→</span></a>
+        </article>
+
+        <article class="card project">
+          <div class="tagRow">
+            <span class="tag">CAD Prep</span>
+            <span class="tag">Scoped Apps</span>
+            <span class="tag">Best Practices</span>
+          </div>
+          <h3>CAD Study Plan + Applied Labs</h3>
+          <p>
+            Preparing for the Certified Application Developer (CAD) exam by turning topics into small labs (scoped app structure,
+            access controls, reusable components, and automation patterns).
+          </p>
+          <a class="more" href="#certifications">Progress tracking <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+
+      
+    </section>
+
+    <section id="certifications">
+      <div class="sectionTitle">
+        <h2>Certifications</h2>
+        
+      </div>
+
+      <div class="certGrid">
+        <!-- CSA -->
+        <article class="card certCard">
+          <img class="certThumb" src="cert_csa.jpg" alt="ServiceNow Certified System Administrator (CSA) certificate" onerror="this.style.objectFit='contain'; this.style.padding='18px'; this.src='achievement-icon.png';" />
+          <h3 class="certTitle">ServiceNow Certified System Administrator (CSA)</h3>
+          <p class="certMeta">Status: Completed · Dec 2025</p>
+          <div class="certLinks">
+            <a href="ServiceNow Certified System Administrator (CSA).pdf" target="_blank" rel="noreferrer">Open PDF →</a>
+          </div>
+        </article>
+
+        <!-- Professional ServiceNow System Administrator -->
+        <article class="card certCard">
+          <img class="certThumb" src="cert_pro_sysadmin.jpg" alt="Professional ServiceNow System Administrator certificate" style="object-fit: contain; padding: 14px; background: #ffffff;" />
+          <h3 class="certTitle">Professional ServiceNow System Administrator</h3>
+          <p class="certMeta">Status: Completed</p>
+        </article>
+
+        <!-- CAD -->
+        <article class="card certCard">
+          <img class="certThumb" src="cert_cad.jpg" alt="ServiceNow CAD certificate" style="object-fit: contain; padding: 14px; background: #ffffff;" />
+          <h3 class="certTitle">ServiceNow Certified Application Developer (CAD)</h3>
+          <p class="certMeta">Status: In progress · Target date: Feb 2026</p>
+          <div class="certLinks">
+            <a href="#contact">Ask for details →</a>
+          </div>
+        </article>
+      </div>
+
+      
+    </section>
+
+    <section id="hobbies">
+      <div class="sectionTitle">
+        <h2>Hobbies & Interests</h2>
+        
+      </div>
+      <div class="card" style="padding:18px; margin-top:14px;">
+        <ul style="margin:0; padding-left:18px; color:var(--muted); line-height:1.6;">
+          <li><b style="color:var(--text)">Fitness & Wellness</b> — Maintaining discipline and consistency through regular physical activity.</li>
+          <li><b style="color:var(--text)">Reading</b> — Novels, self-development books, and problem-solving related topics.</li>
+          <li><b style="color:var(--text)">Continuous Learning</b> — Improving skills through hands-on practice and structured study.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="sectionTitle">
+        <h2>About</h2>
+        
+      </div>
+      <div class="card" style="padding:18px; margin-top:14px;">
+        <div class="aboutRow">
+          <img id="aboutImg" src="profile_headshot.jpg" alt="Buzurg Saim profile image" class="aboutPhoto" />
+          <div class="aboutText">
+            <p style="margin:0; color:var(--muted)">
+            I am actively learning and developing my skills on the ServiceNow platform with the goal of becoming a strong System Developer.
+            I have completed the ServiceNow Certified System Administrator (CSA) certification and am currently preparing for the Certified Application Developer (CAD) exam.
+            <br /><br />
+            My focus is on building a solid foundation through hands-on practice in a personal development instance, where I work with workflow automation,
+            platform configuration, scripting fundamentals, and ITSM processes. I enjoy breaking down concepts into practical exercises and continuously
+            improving my understanding of how ServiceNow is used in real enterprise environments.
+            <br /><br />
+            I am a University of Toronto graduate with an academic background outside of technology, and I transitioned into the ServiceNow ecosystem through certification, hands-on practice, and structured self-learning.
+            <br /><br />
+            I am motivated, detail-oriented, and committed to continuous learning, and I am seeking opportunities where I can grow, contribute, and develop further as a ServiceNow System Developer.
+          </p>
+          </div>
+        </div>
+        <div class="pillRow" style="margin-bottom:0;">
+          <span class="pill">ServiceNow CSA — Completed</span>
+          <span class="pill">ServiceNow CAD — In Progress</span>
+          <span class="pill">Workflow Automation</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="resume">
+      <div class="sectionTitle">
+        <h2>Resume</h2>
+        
+      </div>
+      <div class="card" style="padding:18px; margin-top:14px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:700;">Buzurg Saim — ServiceNow Resume</div>
+          <div style="color:var(--muted); font-size:14px;">One page (PDF). Updated version.</div>
+        </div>
+        <a class="btn" href="Buzurg_Saim_ServiceNow_Resume.pdf" download>Download resume</a>
+        
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="sectionTitle">
+        <h2>Contact</h2>
+        
+      </div>
+
+      <div class="grid">
+        <div class="card" style="grid-column: span 7; padding:18px;">
+          <form id="contactForm" style="display:grid; gap:10px;" autocomplete="on">
+            <label>
+              <span class="sr-only">Your email</span>
+              <input required type="email" name="email" placeholder="Your email" style="width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--border); background: #faf8f4; color: var(--text);" />
+            </label>
+            <label>
+              <span class="sr-only">Message</span>
+              <textarea required name="message" rows="5" placeholder="Message" style="width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--border); background:#faf8f4; color: var(--text); resize: vertical;"></textarea>
+            </label>
+            <button class="btn primary" type="submit" style="cursor:pointer; justify-content:center;">Send</button>
+            <div id="formNote" style="color:var(--muted); font-size:13px;"></div>
+          </form>
+        </div>
+
+        <div class="card" style="grid-column: span 5; padding:18px;">
+          <div style="display:grid; gap:10px;">
+            <div>
+              <div style="font-weight:700;">Email</div>
+              <div style="color:var(--muted)"><a href="mailto:Buzurgsaim@gmail.com">Buzurgsaim@gmail.com</a></div>
+            </div>
+            <div>
+              <div style="font-weight:700;">Social</div>
+              <div style="color:var(--muted)">
+                <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a> ·
+                <a href="https://www.linkedin.com/in/buzurg-saim-75777b19b/" target="_self" rel="noopener noreferrer">LinkedIn</a>
+              </div>
+            </div>
+            
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>© <span id="year"></span> Buzurg Saim</div>
+        <div>Built with plain HTML/CSS · <a href="#top">Back to top</a></div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // --- Image fallback (shows a friendly placeholder if files are missing) ---
+    const FALLBACK_IMG = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="640" height="640">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#c9a36a" stop-opacity="0.35"/>
+            <stop offset="1" stop-color="#8b5e34" stop-opacity="0.18"/>
+          </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="#faf8f4"/>
+        <rect x="32" y="32" width="576" height="576" rx="48" fill="url(#g)" stroke="#e5e1d8"/>
+        <text x="50%" y="46%" dominant-baseline="middle" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="28" fill="#1f2937" font-weight="700">Photo not found</text>
+        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="16" fill="#6b7280">Place profile_headshot.jpg next to index.html</text>
+      </svg>
+    `);
+
+    function wireImage(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const status = document.getElementById('imgStatus');
+
+      el.addEventListener('error', () => {
+        el.src = FALLBACK_IMG;
+        if (status) status.style.display = 'block';
+      });
+
+      el.addEventListener('load', () => {
+        if (status) status.style.display = 'none';
+      });
+    }
+
+    wireImage('heroImg');
+    wireImage('aboutImg');
+
+    // Update year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Contact form: mailto fallback (no backend needed)
+    const form = document.getElementById('contactForm');
+    const note = document.getElementById('formNote');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const email = String(data.get('email') || '').trim();
+      const message = String(data.get('message') || '').trim();
+
+      const subject = encodeURIComponent('Portfolio inquiry');
+      const body = encodeURIComponent(`From: ${email}
+
+${message}`);
+      const to = 'Buzurgsaim@gmail.com';
+
+      note.textContent = 'Opening your email app…';
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+
+      setTimeout(() => {
+        note.textContent = 'If your email app didn’t open, copy/paste your message and email me directly.';
+      }, 1200);
+    });
+  </script>
+</body>
+</html>
+
+
+
