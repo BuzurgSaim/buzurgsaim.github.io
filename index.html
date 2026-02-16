@@ -228,6 +228,9 @@
       font-weight: 600;
     }
 
+    .hidden { display: none; }
+    .loadMoreRow { margin-top: 14px; }
+
     /* Certifications */
     .certGrid {
       margin-top: 14px;
@@ -328,7 +331,6 @@
     <section id="learning">
       <div class="sectionTitle">
         <h2>ServiceNow Practice & Learning</h2>
-        
       </div>
 
       <div class="grid">
@@ -340,7 +342,7 @@
           </div>
           <h3>ServiceNow Personal Development Instance</h3>
           <p>
-            Regular hands-on practice in a personal instance: forms, lists, roles, users/groups), and core ITSM configuration.
+            Regular hands-on practice in a personal instance: forms, lists, roles, users/groups, and core ITSM configuration.
             Building confidence with platform navigation, data model basics, and admin best practices.
           </p>
           <a class="more" href="#certifications">Certifications <span aria-hidden="true">→</span></a>
@@ -388,27 +390,39 @@
           <a class="more" href="#certifications">Progress tracking <span aria-hidden="true">→</span></a>
         </article>
       </div>
-
-      
     </section>
+
+    
 
     <section id="projects">
       <div class="sectionTitle">
         <h2>Projects</h2>
+        
       </div>
 
       <div class="grid">
         <article class="card project">
-          
           <h3>Companies Earnings Report</h3>
           <p>
             Designed and implemented an integration that consumes a third-party financial API to retrieve scheduled corporate earnings data and dynamically present results based on selected dates.
             
             In a ServiceNow-style architecture, this project focused on REST API consumption, structured data handling, and transforming external data into user-friendly outputs.
           </p>
-          <a class="btn" href="projects.html#project-1" style="width:max-content;">View project</a>
+          <a class="btn" href="project1.html" style="width:max-content;">View project</a>
+        </article>
+
+        <article class="card project" id="project-2">
+          <h3>Task Completion Data Pipeline</h3>
+          <p>
+            Built a structured task management workflow where records are created, tracked through completion states, and automatically persisted to a backend database once finalized.
+            
+            The solution focused on lifecycle management, data validation, and controlled data transfer, simulating how ServiceNow workflows capture and store operational data in enterprise environments.
+          </p>
+          <a class="btn" href="project2.html" style="width:max-content;">View project</a>
         </article>
       </div>
+
+      
     </section>
 
     <section id="certifications">
@@ -620,6 +634,8 @@ ${message}`);
         note.textContent = 'If your email app didn’t open, copy/paste your message and email me directly.';
       }, 1200);
     });
-  </script>
+
+    
+      </script>
 </body>
 </html>
