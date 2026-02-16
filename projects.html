@@ -113,15 +113,11 @@
     <p class="muted">
       Live data loaded from <span class="pill">https://financialmodelingprep.com/stable/earnings-calendar</span>
       <br />
-      Enter your API key and click <span class="pill">Load This Week</span> to pull the latest earnings calendar onto this page.
+      Click <span class="pill">Load</span> to pull the latest earnings calendar onto this page.
     </p>
 
     <div class="card" style="margin-bottom: 28px;">
-      <div style="display:flex; gap: 10px; align-items:center; flex-wrap: wrap; margin-bottom: 12px;">
-        <label for="fmp-api-key" class="muted" style="margin:0;">FMP API Key:</label>
-        <input id="fmp-api-key" type="password" placeholder="YOUR_FMP_API_KEY" style="padding:10px 12px; border-radius: 12px; border: 1px solid var(--border); min-width: 260px;" />
-
-        <label for="range-preset" class="muted" style="margin:0;">Range:</label>
+      <div style="display:flex; gap: 10px; align-items:center; flex-wrap: wrap; margin-bottom: 12px;">        <label for="range-preset" class="muted" style="margin:0;">Range:</label>
         <select id="range-preset" style="padding:10px 12px; border-radius: 12px; border: 1px solid var(--border); background:#fff;">
           <option value="this_week" selected>This week</option>
           <option value="next_week">Next week</option>
@@ -162,13 +158,15 @@
           </tr>
         </thead>
         <tbody id="earnings-body">
-          <tr><td colspan="7">Enter an API key and click “Load This Week”.</td></tr>
+          <tr><td colspan="7">Choose a range and click “Load”.</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
   <script>
+    const FMP_API_KEY = 'RH5ljVUrh5z4Gy0fc4qOvfYFPXMbkvTi';
+
     function fmtDate(x) {
       const yyyy = x.getFullYear();
       const mm = String(x.getMonth() + 1).padStart(2, '0');
@@ -269,15 +267,14 @@
 
     async function loadEarnings() {
       const tbody = document.getElementById('earnings-body');
-      const keyInput = document.getElementById('fmp-api-key');
       const rangeEl = document.getElementById('earnings-range');
       const presetEl = document.getElementById('range-preset');
 
-      if (!tbody || !keyInput) return;
+      if (!tbody) return;
 
-      const apiKey = (keyInput.value || '').trim();
+      const apiKey = (FMP_API_KEY || '').trim();
       if (!apiKey) {
-        tbody.innerHTML = '<tr><td colspan="7">Please enter your FMP API key first.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7">Missing API key.</td></tr>';
         return;
       }
 
@@ -290,8 +287,7 @@
         return;
       }
 
-      localStorage.setItem('fmp_api_key', apiKey);
-      if (rangeEl) rangeEl.textContent = `${range.from} → ${range.to}`;
+            if (rangeEl) rangeEl.textContent = `${range.from} → ${range.to}`;
 
       const useConfirmed = !!document.getElementById('use-confirmed')?.checked;
       const base = useConfirmed
@@ -353,17 +349,12 @@
     }
 
     function initEarningsUI() {
-      const keyInput = document.getElementById('fmp-api-key');
+      
       const btn = document.getElementById('load-earnings');
       const rangeEl = document.getElementById('earnings-range');
       const presetEl = document.getElementById('range-preset');
       const fromEl = document.getElementById('from-date');
       const toEl = document.getElementById('to-date');
-
-      if (keyInput) {
-        const saved = localStorage.getItem('fmp_api_key');
-        if (saved) keyInput.value = saved;
-      }
 
       // Default range values
       const initial = getRangeFromPreset('this_week');
@@ -380,8 +371,7 @@
       const confirmedToggle = document.getElementById('use-confirmed');
       if (confirmedToggle) {
         confirmedToggle.addEventListener('change', () => {
-          const keyVal = (keyInput?.value || '').trim();
-          if (keyVal) loadEarnings();
+          loadEarnings();
         });
       }
 
@@ -397,8 +387,7 @@
               if (fromEl) fromEl.value = r.from;
               if (toEl) toEl.value = r.to;
               if (rangeEl) rangeEl.textContent = `${r.from} → ${r.to}`;
-              const keyVal = (keyInput?.value || '').trim();
-              if (keyVal) loadEarnings();
+              loadEarnings();
             }
           } else {
             if (rangeEl) rangeEl.textContent = 'Custom range';
@@ -422,3 +411,4 @@
   </script>
 </body>
 </html>
+
