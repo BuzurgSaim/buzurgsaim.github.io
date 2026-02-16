@@ -107,77 +107,48 @@
   <div class="wrap">
     <a class="btn" href="index.html">← Back to Home</a>
 
-    <h1>Projects Overview</h1>
-
-    <div class="card">
-      <table>
-        <thead>
-          <tr>
-            <th>Project Name</th>
-            <th>Description</th>
-            <th>Technologies</th>
-            <th>Status</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Project 1</td>
-            <td>Short description here</td>
-            <td>ServiceNow</td>
-            <td>In Progress</td>
-            <td>Lab practice</td>
-          </tr>
-          <tr>
-            <td>Project 2</td>
-            <td>Short description here</td>
-            <td>Flow Designer</td>
-            <td>Planned</td>
-            <td>Workflow automation</td>
-          </tr>
-          <tr>
-            <td>Project 3</td>
-            <td>Short description here</td>
-            <td>Business Rules</td>
-            <td>Planned</td>
-            <td>Scripting focus</td>
-          </tr>
-          <tr>
-            <td>Project 4</td>
-            <td>Short description here</td>
-            <td>Scoped Apps</td>
-            <td>Planned</td>
-            <td>CAD prep</td>
-          </tr>
-          <tr>
-            <td>Project 5</td>
-            <td>Short description here</td>
-            <td>ITSM</td>
-            <td>Planned</td>
-            <td>Incident lifecycle</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <h1>Earnings Reports This Week</h1>
 
     <h2>Earnings Reports This Week (FMP)</h2>
     <p class="muted">
       Live data loaded from <span class="pill">https://financialmodelingprep.com/stable/earnings-calendar</span>
       <br />
-      <span class="pill">Tip:</span> enter your FMP API key below (kept in your browser via localStorage).
+      Enter your API key and click <span class="pill">Load This Week</span> to pull the latest earnings calendar onto this page.
     </p>
 
     <div class="card" style="margin-bottom: 28px;">
       <div style="display:flex; gap: 10px; align-items:center; flex-wrap: wrap; margin-bottom: 12px;">
         <label for="fmp-api-key" class="muted" style="margin:0;">FMP API Key:</label>
         <input id="fmp-api-key" type="password" placeholder="YOUR_FMP_API_KEY" style="padding:10px 12px; border-radius: 12px; border: 1px solid var(--border); min-width: 260px;" />
-        <button id="load-earnings" class="btn" type="button" style="margin-top:0; cursor:pointer;">Load This Week</button>
+
+        <label for="range-preset" class="muted" style="margin:0;">Range:</label>
+        <select id="range-preset" style="padding:10px 12px; border-radius: 12px; border: 1px solid var(--border); background:#fff;">
+          <option value="this_week" selected>This week</option>
+          <option value="next_week">Next week</option>
+          <option value="last_week">Last week</option>
+          <option value="this_month">This month</option>
+          <option value="custom">Custom dates</option>
+        </select>
+
+        <label for="from-date" class="muted" style="margin:0;">From:</label>
+        <input id="from-date" type="date" style="padding:10px 12px; border-radius: 12px; border: 1px solid var(--border);" />
+
+        <label for="to-date" class="muted" style="margin:0;">To:</label>
+        <input id="to-date" type="date" style="padding:10px 12px; border-radius: 12px; border: 1px solid var(--border);" />
+
+        <button id="load-earnings" class="btn" type="button" style="margin-top:0; cursor:pointer;">Load</button>
+
+        <label class="muted" style="margin:0; display:flex; align-items:center; gap:8px;">
+          <input id="use-confirmed" type="checkbox" style="transform: translateY(1px);" />
+          Use Confirmed (includes time)
+        </label>
+
         <span id="earnings-range" class="pill">—</span>
       </div>
 
       <table aria-describedby="earnings-caption">
         <caption id="earnings-caption" style="text-align:left; padding: 0 0 10px; color: var(--muted); font-size: 13px;">
-          Earnings calendar results for the current week (Mon–Sun). Fields may be blank if estimates/actuals aren’t available.
+          Tip: The <span class="pill">stable/earnings-calendar</span> endpoint may not include exact release time. Try <span class="pill">Confirmed</span> for timing when available.
         </caption>
         <thead>
           <tr>
@@ -195,105 +166,114 @@
         </tbody>
       </table>
     </div>
-
-    <h2>Ditto Abilities (PokeAPI)</h2>
-    <p class="muted">Live data loaded from <span class="pill">https://pokeapi.co/api/v2/pokemon/ditto</span></p>
-
-    <div class="card">
-      <table aria-describedby="ditto-abilities-caption">
-        <caption id="ditto-abilities-caption" style="text-align:left; padding: 0 0 10px; color: var(--muted); font-size: 13px;">
-          Abilities for Ditto
-        </caption>
-        <thead>
-          <tr>
-            <th>Ability</th>
-            <th>Hidden?</th>
-            <th>Slot</th>
-            <th>Ability URL</th>
-          </tr>
-        </thead>
-        <tbody id="ditto-abilities-body">
-          <tr>
-            <td colspan="4">Loading…</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </div>
 
   <script>
-    async function loadDittoAbilities() {
-      const tbody = document.getElementById('ditto-abilities-body');
-
-      try {
-        const res = await fetch('https://pokeapi.co/api/v2/pokemon/ditto');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const data = await res.json();
-        const abilities = Array.isArray(data.abilities) ? data.abilities : [];
-
-        if (abilities.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="4">No abilities found.</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = abilities
-          .slice()
-          .sort((a, b) => (a.slot ?? 0) - (b.slot ?? 0))
-          .map((a) => {
-            const rawName = a?.ability?.name ?? '—';
-            const name = String(rawName).replace(/-/g, ' ');
-            const url = a?.ability?.url ?? '';
-            const isHidden = a?.is_hidden ? 'Yes' : 'No';
-            const slot = a?.slot ?? '—';
-
-            const safeUrl = url
-              ? `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`
-              : '—';
-
-            return `
-              <tr>
-                <td style="text-transform: capitalize;">${name}</td>
-                <td>${isHidden}</td>
-                <td>${slot}</td>
-                <td>${safeUrl}</td>
-              </tr>
-            `;
-          })
-          .join('');
-      } catch (err) {
-        const msg = err && err.message ? err.message : String(err);
-        tbody.innerHTML = `<tr><td colspan="4">Failed to load abilities. ${msg}</td></tr>`;
-      }
+    function fmtDate(x) {
+      const yyyy = x.getFullYear();
+      const mm = String(x.getMonth() + 1).padStart(2, '0');
+      const dd = String(x.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
     }
 
-    function getWeekRangeLocal(date = new Date()) {
-      // Week = Monday -> Sunday
+    function startOfWeekMonday(date = new Date()) {
       const d = new Date(date);
       const day = d.getDay(); // 0=Sun, 1=Mon...
       const diffToMonday = (day === 0 ? -6 : 1 - day);
       const monday = new Date(d);
       monday.setDate(d.getDate() + diffToMonday);
       monday.setHours(0, 0, 0, 0);
+      return monday;
+    }
 
+    function endOfWeekSunday(monday) {
       const sunday = new Date(monday);
       sunday.setDate(monday.getDate() + 6);
       sunday.setHours(23, 59, 59, 999);
-
-      const fmt = (x) => {
-        const yyyy = x.getFullYear();
-        const mm = String(x.getMonth() + 1).padStart(2, '0');
-        const dd = String(x.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}`;
-      };
-
-      return { from: fmt(monday), to: fmt(sunday) };
+      return sunday;
     }
 
-    async function loadEarningsThisWeek() {
+    function startOfMonth(date = new Date()) {
+      const d = new Date(date);
+      d.setDate(1);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function endOfMonth(date = new Date()) {
+      const d = new Date(date);
+      d.setMonth(d.getMonth() + 1);
+      d.setDate(0); // last day of previous month
+      d.setHours(23, 59, 59, 999);
+      return d;
+    }
+
+    function getRangeFromPreset(preset) {
+      const now = new Date();
+
+      if (preset === 'this_week') {
+        const mon = startOfWeekMonday(now);
+        return { from: fmtDate(mon), to: fmtDate(endOfWeekSunday(mon)) };
+      }
+
+      if (preset === 'next_week') {
+        const mon = startOfWeekMonday(now);
+        mon.setDate(mon.getDate() + 7);
+        return { from: fmtDate(mon), to: fmtDate(endOfWeekSunday(mon)) };
+      }
+
+      if (preset === 'last_week') {
+        const mon = startOfWeekMonday(now);
+        mon.setDate(mon.getDate() - 7);
+        return { from: fmtDate(mon), to: fmtDate(endOfWeekSunday(mon)) };
+      }
+
+      if (preset === 'this_month') {
+        return { from: fmtDate(startOfMonth(now)), to: fmtDate(endOfMonth(now)) };
+      }
+
+      return null; // custom handled elsewhere
+    }
+
+    function setCustomInputsEnabled(enabled) {
+      const fromEl = document.getElementById('from-date');
+      const toEl = document.getElementById('to-date');
+      if (fromEl) fromEl.disabled = !enabled;
+      if (toEl) toEl.disabled = !enabled;
+      if (fromEl) fromEl.style.opacity = enabled ? '1' : '0.6';
+      if (toEl) toEl.style.opacity = enabled ? '1' : '0.6';
+    }
+
+    function getSelectedRange() {
+      const presetEl = document.getElementById('range-preset');
+      const fromEl = document.getElementById('from-date');
+      const toEl = document.getElementById('to-date');
+
+      const preset = presetEl?.value || 'this_week';
+
+      if (preset !== 'custom') {
+        const r = getRangeFromPreset(preset);
+        if (!r) return null;
+        // reflect in inputs for clarity
+        if (fromEl) fromEl.value = r.from;
+        if (toEl) toEl.value = r.to;
+        return r;
+      }
+
+      const from = (fromEl?.value || '').trim();
+      const to = (toEl?.value || '').trim();
+      if (!from || !to) return null;
+      if (from > to) return null;
+      return { from, to };
+    }
+
+    async function loadEarnings() {
       const tbody = document.getElementById('earnings-body');
       const keyInput = document.getElementById('fmp-api-key');
       const rangeEl = document.getElementById('earnings-range');
+      const presetEl = document.getElementById('range-preset');
+
+      if (!tbody || !keyInput) return;
 
       const apiKey = (keyInput.value || '').trim();
       if (!apiKey) {
@@ -301,13 +281,24 @@
         return;
       }
 
+      const range = getSelectedRange();
+      const preset = presetEl?.value || 'this_week';
+      if (!range) {
+        tbody.innerHTML = preset === 'custom'
+          ? '<tr><td colspan="7">Please choose valid From/To dates (From must be ≤ To).</td></tr>'
+          : '<tr><td colspan="7">Could not determine date range.</td></tr>';
+        return;
+      }
+
       localStorage.setItem('fmp_api_key', apiKey);
+      if (rangeEl) rangeEl.textContent = `${range.from} → ${range.to}`;
 
-      const { from, to } = getWeekRangeLocal();
-      rangeEl.textContent = `${from} → ${to}`;
+      const useConfirmed = !!document.getElementById('use-confirmed')?.checked;
+      const base = useConfirmed
+        ? 'https://financialmodelingprep.com/api/v4/earning-calendar-confirmed'
+        : 'https://financialmodelingprep.com/stable/earnings-calendar';
 
-      // FMP Stable Earnings Calendar endpoint (requires apikey)
-      const url = `https://financialmodelingprep.com/stable/earnings-calendar?from=${from}&to=${to}&apikey=${encodeURIComponent(apiKey)}`;
+      const url = `${base}?from=${range.from}&to=${range.to}&apikey=${encodeURIComponent(apiKey)}`;
 
       tbody.innerHTML = '<tr><td colspan="7">Loading…</td></tr>';
 
@@ -317,7 +308,7 @@
 
         const rows = await res.json();
         if (!Array.isArray(rows) || rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7">No earnings found for this week (or your plan may not include date filters).</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7">No earnings found for the selected range.</td></tr>';
           return;
         }
 
@@ -328,16 +319,18 @@
           return Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 2 }).format(num);
         };
 
+        const numOrDash = (v) => (v === null || v === undefined || v === '' ? '—' : v);
+
         tbody.innerHTML = rows
           .slice()
           .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')))
           .map((r) => {
             const symbol = r.symbol ?? '—';
             const date = r.date ?? '—';
-            const time = r.time ?? r.hour ?? '—';
-            const epsEst = r.epsEstimated ?? r.epsEstimated || r.eps_estimated || r.epsEstimate || r.epsEstimate ?? r.epsEstimated;
-            const epsAct = r.eps ?? r.epsActual ?? r.eps_actual ?? r.eps;
-            const revEst = r.revenueEstimated ?? r.revenue_estimated ?? r.revenueEstimate;
+            const time = r.time ?? r.hour ?? r.timing ?? r.when ?? '—';
+            const epsEst = r.epsEstimated ?? r.eps_estimated ?? r.epsEstimate ?? r.eps_estimate;
+            const epsAct = r.eps ?? r.epsActual ?? r.eps_actual;
+            const revEst = r.revenueEstimated ?? r.revenue_estimated ?? r.revenueEstimate ?? r.revenue_estimate;
             const revAct = r.revenue ?? r.revenueActual ?? r.revenue_actual;
 
             return `
@@ -345,8 +338,8 @@
                 <td>${symbol}</td>
                 <td>${date}</td>
                 <td>${time}</td>
-                <td>${epsEst ?? '—'}</td>
-                <td>${epsAct ?? '—'}</td>
+                <td>${numOrDash(epsEst)}</td>
+                <td>${numOrDash(epsAct)}</td>
                 <td>${money(revEst)}</td>
                 <td>${money(revAct)}</td>
               </tr>
@@ -362,19 +355,70 @@
     function initEarningsUI() {
       const keyInput = document.getElementById('fmp-api-key');
       const btn = document.getElementById('load-earnings');
-      const saved = localStorage.getItem('fmp_api_key');
-      if (saved) keyInput.value = saved;
-      btn.addEventListener('click', loadEarningsThisWeek);
-
-      const { from, to } = getWeekRangeLocal();
       const rangeEl = document.getElementById('earnings-range');
-      if (rangeEl) rangeEl.textContent = `${from} → ${to}`;
+      const presetEl = document.getElementById('range-preset');
+      const fromEl = document.getElementById('from-date');
+      const toEl = document.getElementById('to-date');
+
+      if (keyInput) {
+        const saved = localStorage.getItem('fmp_api_key');
+        if (saved) keyInput.value = saved;
+      }
+
+      // Default range values
+      const initial = getRangeFromPreset('this_week');
+      if (initial) {
+        if (fromEl) fromEl.value = initial.from;
+        if (toEl) toEl.value = initial.to;
+        if (rangeEl) rangeEl.textContent = `${initial.from} → ${initial.to}`;
+      }
+
+      setCustomInputsEnabled(false);
+
+      if (btn) btn.addEventListener('click', loadEarnings);
+
+      const confirmedToggle = document.getElementById('use-confirmed');
+      if (confirmedToggle) {
+        confirmedToggle.addEventListener('change', () => {
+          const keyVal = (keyInput?.value || '').trim();
+          if (keyVal) loadEarnings();
+        });
+      }
+
+      if (presetEl) {
+        presetEl.addEventListener('change', () => {
+          const preset = presetEl.value;
+          const isCustom = preset === 'custom';
+          setCustomInputsEnabled(isCustom);
+
+          if (!isCustom) {
+            const r = getRangeFromPreset(preset);
+            if (r) {
+              if (fromEl) fromEl.value = r.from;
+              if (toEl) toEl.value = r.to;
+              if (rangeEl) rangeEl.textContent = `${r.from} → ${r.to}`;
+              const keyVal = (keyInput?.value || '').trim();
+              if (keyVal) loadEarnings();
+            }
+          } else {
+            if (rangeEl) rangeEl.textContent = 'Custom range';
+          }
+        });
+      }
+
+      // If user edits custom dates, don't auto-load unless they click Load.
+      // But we keep the pill updated.
+      const updatePill = () => {
+        const r = getSelectedRange();
+        if (presetEl?.value === 'custom') {
+          if (rangeEl) rangeEl.textContent = r ? `${r.from} → ${r.to}` : 'Custom range';
+        }
+      };
+      if (fromEl) fromEl.addEventListener('change', updatePill);
+      if (toEl) toEl.addEventListener('change', updatePill);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initEarningsUI();
-      loadDittoAbilities();
-    });
+    document.addEventListener('DOMContentLoaded', initEarningsUI);
   </script>
 </body>
 </html>
