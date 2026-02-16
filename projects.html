@@ -34,14 +34,36 @@
     h1 {
       margin-bottom: 20px;
     }
-
     .card {
       background: var(--panel);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 20px;
       border: 1px solid var(--border);
+      overflow-x: auto;
     }
+
+    h2 {
+      margin: 28px 0 12px;
+      font-size: 18px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 12px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #faf8f4;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
 
     table {
       width: 100%;
@@ -137,6 +159,222 @@
         </tbody>
       </table>
     </div>
+
+    <h2>Earnings Reports This Week (FMP)</h2>
+    <p class="muted">
+      Live data loaded from <span class="pill">https://financialmodelingprep.com/stable/earnings-calendar</span>
+      <br />
+      <span class="pill">Tip:</span> enter your FMP API key below (kept in your browser via localStorage).
+    </p>
+
+    <div class="card" style="margin-bottom: 28px;">
+      <div style="display:flex; gap: 10px; align-items:center; flex-wrap: wrap; margin-bottom: 12px;">
+        <label for="fmp-api-key" class="muted" style="margin:0;">FMP API Key:</label>
+        <input id="fmp-api-key" type="password" placeholder="YOUR_FMP_API_KEY" style="padding:10px 12px; border-radius: 12px; border: 1px solid var(--border); min-width: 260px;" />
+        <button id="load-earnings" class="btn" type="button" style="margin-top:0; cursor:pointer;">Load This Week</button>
+        <span id="earnings-range" class="pill">—</span>
+      </div>
+
+      <table aria-describedby="earnings-caption">
+        <caption id="earnings-caption" style="text-align:left; padding: 0 0 10px; color: var(--muted); font-size: 13px;">
+          Earnings calendar results for the current week (Mon–Sun). Fields may be blank if estimates/actuals aren’t available.
+        </caption>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>EPS Est.</th>
+            <th>EPS Actual</th>
+            <th>Revenue Est.</th>
+            <th>Revenue Actual</th>
+          </tr>
+        </thead>
+        <tbody id="earnings-body">
+          <tr><td colspan="7">Enter an API key and click “Load This Week”.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Ditto Abilities (PokeAPI)</h2>
+    <p class="muted">Live data loaded from <span class="pill">https://pokeapi.co/api/v2/pokemon/ditto</span></p>
+
+    <div class="card">
+      <table aria-describedby="ditto-abilities-caption">
+        <caption id="ditto-abilities-caption" style="text-align:left; padding: 0 0 10px; color: var(--muted); font-size: 13px;">
+          Abilities for Ditto
+        </caption>
+        <thead>
+          <tr>
+            <th>Ability</th>
+            <th>Hidden?</th>
+            <th>Slot</th>
+            <th>Ability URL</th>
+          </tr>
+        </thead>
+        <tbody id="ditto-abilities-body">
+          <tr>
+            <td colspan="4">Loading…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
+
+  <script>
+    async function loadDittoAbilities() {
+      const tbody = document.getElementById('ditto-abilities-body');
+
+      try {
+        const res = await fetch('https://pokeapi.co/api/v2/pokemon/ditto');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        const abilities = Array.isArray(data.abilities) ? data.abilities : [];
+
+        if (abilities.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4">No abilities found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = abilities
+          .slice()
+          .sort((a, b) => (a.slot ?? 0) - (b.slot ?? 0))
+          .map((a) => {
+            const rawName = a?.ability?.name ?? '—';
+            const name = String(rawName).replace(/-/g, ' ');
+            const url = a?.ability?.url ?? '';
+            const isHidden = a?.is_hidden ? 'Yes' : 'No';
+            const slot = a?.slot ?? '—';
+
+            const safeUrl = url
+              ? `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`
+              : '—';
+
+            return `
+              <tr>
+                <td style="text-transform: capitalize;">${name}</td>
+                <td>${isHidden}</td>
+                <td>${slot}</td>
+                <td>${safeUrl}</td>
+              </tr>
+            `;
+          })
+          .join('');
+      } catch (err) {
+        const msg = err && err.message ? err.message : String(err);
+        tbody.innerHTML = `<tr><td colspan="4">Failed to load abilities. ${msg}</td></tr>`;
+      }
+    }
+
+    function getWeekRangeLocal(date = new Date()) {
+      // Week = Monday -> Sunday
+      const d = new Date(date);
+      const day = d.getDay(); // 0=Sun, 1=Mon...
+      const diffToMonday = (day === 0 ? -6 : 1 - day);
+      const monday = new Date(d);
+      monday.setDate(d.getDate() + diffToMonday);
+      monday.setHours(0, 0, 0, 0);
+
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      sunday.setHours(23, 59, 59, 999);
+
+      const fmt = (x) => {
+        const yyyy = x.getFullYear();
+        const mm = String(x.getMonth() + 1).padStart(2, '0');
+        const dd = String(x.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      };
+
+      return { from: fmt(monday), to: fmt(sunday) };
+    }
+
+    async function loadEarningsThisWeek() {
+      const tbody = document.getElementById('earnings-body');
+      const keyInput = document.getElementById('fmp-api-key');
+      const rangeEl = document.getElementById('earnings-range');
+
+      const apiKey = (keyInput.value || '').trim();
+      if (!apiKey) {
+        tbody.innerHTML = '<tr><td colspan="7">Please enter your FMP API key first.</td></tr>';
+        return;
+      }
+
+      localStorage.setItem('fmp_api_key', apiKey);
+
+      const { from, to } = getWeekRangeLocal();
+      rangeEl.textContent = `${from} → ${to}`;
+
+      // FMP Stable Earnings Calendar endpoint (requires apikey)
+      const url = `https://financialmodelingprep.com/stable/earnings-calendar?from=${from}&to=${to}&apikey=${encodeURIComponent(apiKey)}`;
+
+      tbody.innerHTML = '<tr><td colspan="7">Loading…</td></tr>';
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const rows = await res.json();
+        if (!Array.isArray(rows) || rows.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7">No earnings found for this week (or your plan may not include date filters).</td></tr>';
+          return;
+        }
+
+        const money = (v) => {
+          if (v === null || v === undefined || v === '') return '—';
+          const num = Number(v);
+          if (Number.isNaN(num)) return String(v);
+          return Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 2 }).format(num);
+        };
+
+        tbody.innerHTML = rows
+          .slice()
+          .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')))
+          .map((r) => {
+            const symbol = r.symbol ?? '—';
+            const date = r.date ?? '—';
+            const time = r.time ?? r.hour ?? '—';
+            const epsEst = r.epsEstimated ?? r.epsEstimated || r.eps_estimated || r.epsEstimate || r.epsEstimate ?? r.epsEstimated;
+            const epsAct = r.eps ?? r.epsActual ?? r.eps_actual ?? r.eps;
+            const revEst = r.revenueEstimated ?? r.revenue_estimated ?? r.revenueEstimate;
+            const revAct = r.revenue ?? r.revenueActual ?? r.revenue_actual;
+
+            return `
+              <tr>
+                <td>${symbol}</td>
+                <td>${date}</td>
+                <td>${time}</td>
+                <td>${epsEst ?? '—'}</td>
+                <td>${epsAct ?? '—'}</td>
+                <td>${money(revEst)}</td>
+                <td>${money(revAct)}</td>
+              </tr>
+            `;
+          })
+          .join('');
+      } catch (err) {
+        const msg = err && err.message ? err.message : String(err);
+        tbody.innerHTML = `<tr><td colspan="7">Failed to load earnings data. ${msg}</td></tr>`;
+      }
+    }
+
+    function initEarningsUI() {
+      const keyInput = document.getElementById('fmp-api-key');
+      const btn = document.getElementById('load-earnings');
+      const saved = localStorage.getItem('fmp_api_key');
+      if (saved) keyInput.value = saved;
+      btn.addEventListener('click', loadEarningsThisWeek);
+
+      const { from, to } = getWeekRangeLocal();
+      const rangeEl = document.getElementById('earnings-range');
+      if (rangeEl) rangeEl.textContent = `${from} → ${to}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initEarningsUI();
+      loadDittoAbilities();
+    });
+  </script>
 </body>
 </html>
