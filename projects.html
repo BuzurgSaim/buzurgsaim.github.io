@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projects — Buzurg Saim</title>
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e1d8;
+      --accent: #8b5e34;
+      --accent2: #c9a36a;
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --max: 900px;
+    }
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(900px 450px at 15% 10%, rgba(201,163,106,0.25), transparent 55%),
+        radial-gradient(800px 420px at 85% 15%, rgba(139,94,52,0.18), transparent 55%),
+        var(--bg);
+    }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 26px 18px 72px; }
+    .card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    h1 { margin: 0 0 12px; letter-spacing: -0.02em; }
+    h2 { margin: 0 0 8px; font-size: 18px; }
+    p { margin: 0; color: var(--muted); }
+    .btn {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      text-decoration: none;
+      margin-bottom: 14px;
+    }
+    .btn:hover { background:#faf8f4; text-decoration:none; }
+    .stack { display: grid; gap: 14px; }
+    .pillRow { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #faf8f4;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <a class="btn" href="index.html">← Back to home</a>
+
+    <h1>Projects</h1>
+    <p>Case studies and work samples. (These can start simple and improve over time.)</p>
+
+    <div class="stack" style="margin-top:16px;">
+      <section id="project-1" class="card">
+        <h2>Project Case Study #1</h2>
+        <p>
+          Replace this with your project details: goal, steps you took, and what you learned.
+          Add screenshots later if you want.
+        </p>
+        <div class="pillRow">
+          <span class="pill">ServiceNow</span>
+          <span class="pill">ITSM</span>
+          <span class="pill">Flow Designer</span>
+        </div>
+      </section>
+
+      <section id="project-2" class="card">
+        <h2>Project Case Study #2</h2>
+        <p>
+          Add another case study here. Keep it short and clear.
+        </p>
+        <div class="pillRow">
+          <span class="pill">Workflow</span>
+          <span class="pill">Automation</span>
+          <span class="pill">Best Practices</span>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
