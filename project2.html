@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exercise Management App — Project</title>
+  <meta name="description" content="Exercise Management App — full-stack web app for weekly exercise tasks, XP gamification, and Google Sheets logging." />
+
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e1d8;
+      --accent: #8b5e34;
+      --accent2: #c9a36a;
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --max: 1000px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(900px 450px at 15% 10%, rgba(201,163,106,0.25), transparent 55%),
+        radial-gradient(800px 420px at 85% 15%, rgba(139,94,52,0.18), transparent 55%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 40px 20px 80px; }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    h1 { margin-top: 0; font-size: 32px; }
+    h2 { margin-top: 40px; font-size: 20px; }
+    p { color: var(--muted); }
+
+    .section { margin-top: 30px; }
+
+    .highlight {
+      background: #faf8f4;
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 14px;
+      margin-top: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .exercise-list {
+      margin-top: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .exercise-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #faf8f4;
+    }
+
+    .exercise-item.completed {
+      opacity: 0.6;
+      text-decoration: line-through;
+    }
+
+    .xp-box {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(201,163,106,0.25), rgba(139,94,52,0.12));
+      font-weight: 600;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(201,163,106,0.35), rgba(139,94,52,0.15));
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .sheet-link {
+      display: inline-flex;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(139,94,52,0.45);
+      width: fit-content;
+    }
+
+    .sheet-link:hover { opacity: 0.85; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Exercise Management App</h1>
+      <p>
+        A full-stack web application that manages weekly exercise tasks with completion tracking and a gamified experience points (XP) system.
+      </p>
+
+      <div class="highlight">
+        🚧 <strong>Work in Progress:</strong> This project is still being improved. I’m continuing to add features, clean up the design, and improve how the data is tracked and displayed.
+        <br /><br />
+        More updates coming soon.
+      </div>
+
+      <div class="section">
+        <h2>Today's Exercises</h2>
+        <p>Complete exercises to earn XP.</p>
+
+        
+
+        <div class="exercise-list" id="exerciseList"></div>
+
+        <div class="xp-box">
+          Total XP Earned Today: <span id="xpTotal">0</span>
+          <div style="margin-top:6px; font-size:13px; color:var(--muted);">
+            Yesterday: <span id="xpYesterday">0</span> • All-time: <span id="xpAllTime">0</span>
+          </div>
+          <div id="sheetStatus" style="margin-top:8px; font-size:13px; color:var(--muted);"></div>
+          <a id="sheetLink" class="sheet-link" href="#" target="_blank" rel="noopener noreferrer">View Google Sheet (read-only)</a>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>System Design</h2>
+        <p>
+          When an exercise is marked complete, XP is awarded and the UI updates dynamically.
+          In a production environment, this event would trigger server-side logic to update
+          performance metrics (Strength, Stamina, General Health) and log the result via the Google Sheets API.
+        </p>
+      </div>
+
+      <a href="index.html#projects" class="btn">← Back to Portfolio</a>
+    </div>
+  </div>
+
+  <script>
+    const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwesopySCnNrmL740oaAhbsBZTbN3mgzj7WZBK67MtAcHgAY8OnssmjR4Xp1Y0BdAKf1w/exec";
+    const SHEET_SECRET = "BS_EXERCISE_APP_2026";
+
+    // Paste your published read-only Google Sheet link here (File → Share → Publish to web)
+    // Example format ends with: /pubhtml
+    const SHEET_READONLY_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQKCa1_2ZJUdezqYEJ8BcMoTF5x84vMYGwZt32m178i4icOQbiJ6KuYNPNdnj2HgwtL613L-twbAghU/pubhtml?gid=0&single=true";
+
+    const exerciseListEl = document.getElementById('exerciseList');
+    const xpTotalEl = document.getElementById('xpTotal');
+    const xpYesterdayEl = document.getElementById('xpYesterday');
+    const xpAllTimeEl = document.getElementById('xpAllTime');
+    const statusEl = document.getElementById('sheetStatus');
+    const sheetLinkEl = document.getElementById('sheetLink');
+    // ================================
+    // Performance Metrics Configuration
+    // ================================
+    const METRIC_RULES = {
+      strength: ['Push', 'Squat', 'Lunge', 'Press', 'Curl', 'Pulldown', 'Row', 'Burpee', 'Glute', 'Calf'],
+      stamina: ['Run', 'Bike', 'Cycl', 'Jump', 'Rowing', 'High knees', 'Stair', 'Shadow'],
+    };
+
+    function calculateMetrics(tasks, checked) {
+      let strength = 0;
+      let stamina = 0;
+
+      (tasks || []).forEach((t) => {
+        if (!checked?.[t.task]) return;
+        const name = t.task;
+        const xp = Number(t.xp || 0);
+
+        if (METRIC_RULES.strength.some(k => name.includes(k))) strength += xp;
+        if (METRIC_RULES.stamina.some(k => name.includes(k))) stamina += xp;
+      });
+
+      const generalHealth = Math.round((strength + stamina) / 2);
+      return { strength, stamina, generalHealth };
+    }
+
+    // ================================
+    // Exercise Pool (Home-Friendly)
+    // ================================
+    const EXERCISE_POOL = [
+      { task: 'Push-ups (3 sets)', xp: 10 },
+      { task: 'Plank (3 x 60 seconds)', xp: 10 },
+      { task: 'Stretching (10 minutes)', xp: 5 },
+      { task: 'Bodyweight squats (3 sets)', xp: 10 },
+      { task: 'Jump rope (10 minutes)', xp: 10 },
+      { task: 'Lunges (3 sets)', xp: 10 },
+      { task: 'Yoga (15 minutes)', xp: 10 },
+      { task: 'Burpees (3 sets)', xp: 15 },
+      { task: 'Mountain climbers (3 sets)', xp: 10 },
+      { task: 'Glute bridge (3 sets)', xp: 10 }
+    ];
+
+    const DAILY_COUNT = 4;
+
+    function localDateKey(d = new Date()) {
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function hashStringToUint32(str) {
+      let h = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    }
+
+    function mulberry32(seed) {
+      return function () {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function pickDailyExercises(dateKey) {
+      const rng = mulberry32(hashStringToUint32(`home:${dateKey}`));
+      const idxs = [...EXERCISE_POOL.keys()];
+
+      for (let i = idxs.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [idxs[i], idxs[j]] = [idxs[j], idxs[i]];
+      }
+
+      return idxs.slice(0, Math.min(DAILY_COUNT, idxs.length)).map(i => EXERCISE_POOL[i]);
+    }
+
+    function renderExercises(tasks, checkedMap) {
+      exerciseListEl.innerHTML = '';
+      tasks.forEach(t => {
+        const row = document.createElement('div');
+        row.className = 'exercise-item';
+        row.dataset.task = t.task;
+
+        const span = document.createElement('span');
+        span.textContent = t.task;
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.dataset.xp = t.xp;
+        cb.checked = !!checkedMap?.[t.task];
+
+        row.appendChild(span);
+        row.appendChild(cb);
+        if (cb.checked) row.classList.add('completed');
+        exerciseListEl.appendChild(row);
+      });
+    }
+
+    const STORAGE_KEY = 'exercise_app_state_v5';
+
+    function saveAppState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadAppState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }
+
+    function defaultState() {
+      const date = localDateKey();
+      return {
+        date,
+        tasks: pickDailyExercises(date),
+        checked: {},
+        yesterdayXP: 0,
+        allTimeXP: 0,
+        baseMetrics: { strength: 0, stamina: 0 },
+        metricsToday: { strength: 0, stamina: 0, generalHealth: 0 }
+      };
+    }
+
+    function updateUI(state) {
+      let totalXP = 0;
+      document.querySelectorAll('#exerciseList input').forEach(cb => {
+        const xp = Number(cb.dataset.xp || 0);
+        if (cb.checked) totalXP += xp;
+      });
+      xpTotalEl.textContent = totalXP;
+      xpYesterdayEl.textContent = state.yesterdayXP;
+      xpAllTimeEl.textContent = state.allTimeXP;
+
+      const today = calculateMetrics(state.tasks, state.checked);
+      state.metricsToday = today;
+
+      const base = state.baseMetrics || { strength: 0, stamina: 0 };
+      const totalStrength = Number(base.strength || 0) + Number(today.strength || 0);
+      const totalStamina  = Number(base.stamina || 0) + Number(today.stamina || 0);
+      const totalHealth   = Math.round((totalStrength + totalStamina) / 2);
+
+      statusEl.textContent = `Today — Strength: ${today.strength} | Stamina: ${today.stamina} | Health: ${today.generalHealth}  ·  Total — Strength: ${totalStrength} | Stamina: ${totalStamina} | Health: ${totalHealth}`;
+
+      saveAppState(state);
+      return totalXP;
+    }
+
+    function logToGoogleSheets(payload) {
+      const data = JSON.stringify(payload);
+      navigator.sendBeacon(SHEET_WEB_APP_URL, new Blob([data], { type: 'text/plain' }));
+    }
+
+    function computeTotalXPFromState(state) {
+      let total = 0;
+      (state.tasks || []).forEach((t) => {
+        if (state.checked?.[t.task]) total += Number(t.xp || 0);
+      });
+      return total;
+    }
+
+    function rolloverIfNewDay(state) {
+      const todayKey = localDateKey();
+      if (!state || !state.date) return defaultState();
+      if (state.date === todayKey) return state;
+
+      const yesterdayTotalXP = computeTotalXPFromState(state);
+      const yesterdayMetrics = calculateMetrics(state.tasks, state.checked);
+      const base = state.baseMetrics || { strength: 0, stamina: 0 };
+
+      const nextBase = {
+        strength: Number(base.strength || 0) + Number(yesterdayMetrics.strength || 0),
+        stamina:  Number(base.stamina || 0) + Number(yesterdayMetrics.stamina || 0)
+      };
+
+      const next = {
+        date: todayKey,
+        tasks: pickDailyExercises(todayKey),
+        checked: {},
+        yesterdayXP: yesterdayTotalXP,
+        allTimeXP: Number(state.allTimeXP || 0) + Number(yesterdayTotalXP || 0),
+        baseMetrics: nextBase,
+        metricsToday: { strength: 0, stamina: 0, generalHealth: 0 }
+      };
+
+      saveAppState(next);
+      return next;
+    }
+
+    function msUntilNextMidnight() {
+      const now = new Date();
+      const next = new Date(now);
+      next.setHours(24, 0, 0, 50);
+      return Math.max(0, next.getTime() - now.getTime());
+    }
+
+    (function init() {
+      // Show/hide the read-only Sheet link
+      if (sheetLinkEl) {
+        if (SHEET_READONLY_URL && /^https?:\/\//i.test(SHEET_READONLY_URL)) {
+          sheetLinkEl.href = SHEET_READONLY_URL;
+          sheetLinkEl.style.display = 'inline-flex';
+        } else {
+          sheetLinkEl.style.display = 'none';
+        }
+      }
+
+
+      let state = rolloverIfNewDay(loadAppState() || defaultState());
+
+      if (!Array.isArray(state.tasks) || state.tasks.length === 0) {
+        state.tasks = pickDailyExercises(state.date || localDateKey());
+      }
+
+      renderExercises(state.tasks, state.checked);
+      updateUI(state);
+      saveAppState(state);
+
+      exerciseListEl.addEventListener('change', (e) => {
+        if (!(e.target instanceof HTMLInputElement)) return;
+        if (e.target.type !== 'checkbox') return;
+
+        const task = e.target.closest('.exercise-item')?.dataset?.task || 'Unknown';
+        if (e.target.checked) state.checked[task] = true;
+        else delete state.checked[task];
+
+        const totalXP = updateUI(state);
+
+        logToGoogleSheets({
+          task,
+          completed: e.target.checked,
+          xp: e.target.dataset.xp,
+          metricsToday: state.metricsToday,
+          baseMetrics: state.baseMetrics,
+          totalXP,
+          clientTime: new Date().toISOString(),
+          secret: SHEET_SECRET
+        });
+
+      });
+
+      setTimeout(() => {
+        state = rolloverIfNewDay(loadAppState() || state);
+        renderExercises(state.tasks, state.checked);
+        updateUI(state);
+        if (statusEl) statusEl.textContent = 'New day ✔ Exercises refreshed.';
+
+        setInterval(() => {
+          const key = localDateKey();
+          if (state.date !== key) {
+            state = rolloverIfNewDay(loadAppState() || state);
+            renderExercises(state.tasks, state.checked);
+            updateUI(state);
+            if (statusEl) statusEl.textContent = 'New day ✔ Exercises refreshed.';
+          }
+        }, 60 * 1000);
+      }, msUntilNextMidnight());
+    })();
+  </script>
+</body>
+</html>
